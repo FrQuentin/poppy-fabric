@@ -1,0 +1,11 @@
+{
+	"required": true,
+	"package": "fr.quentin.poppy.mixin",
+	"compatibilityLevel": "JAVA_21",
+	"mixins": [
+		"PoppyMixin"
+	],
+	"injectors": {
+		"defaultRequire": 1
+	}
+}
