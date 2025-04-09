@@ -1,0 +1,14 @@
+{
+  "commands.poppy.sethome.usage": "Usage: /sethome <home>",
+  "commands.poppy.sethome.already_exists": "A home named '%s' already exists!",
+  "commands.poppy.sethome.success": "Successfully created a new home: %s",
+  "commands.poppy.delhome.usage": "Usage: /delhome <home>",
+  "commands.poppy.delhome.success": "Successfully deleted your home: %s",
+  "commands.poppy.delhome.not_found": "You do not have a home named '%s'",
+  "commands.poppy.home.usage": "Usage: /home <home>",
+  "commands.poppy.home.portal_error": "You cannot teleport while standing in a portal!",
+  "commands.poppy.home.teleporting": "Teleportation will occur in 3 seconds. Do not move!",
+  "commands.poppy.home.not_found": "You do not have a home named '%s'",
+  "commands.poppy.home.cancel_moved": "Teleportation canceled because you moved!",
+  "commands.poppy.home.success": "You have been successfully teleported to your home: %s"
+}

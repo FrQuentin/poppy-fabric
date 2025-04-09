@@ -3,7 +3,7 @@
 	"id": "poppy",
 	"version": "${version}",
 	"name": "Poppy",
-	"description": "A Quality of Life mod that simplifies tasks, enhances gameplay, and fixes common bugs from vanilla Minecraft.",
+	"description": "Poppy Description",
 	"authors": [
 		"Quentin Fouilleul"
 	],
