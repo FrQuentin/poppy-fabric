@@ -8,9 +8,18 @@
   "commands.poppy.delhome.success": "Successfully deleted your home: %s",
   "commands.poppy.delhome.not_found": "You do not have a home named '%s'",
   "commands.poppy.home.usage": "Usage: /home <home>",
+  "commands.poppy.home.cooldown": "You must wait %s more seconds before using the /home command again.",
   "commands.poppy.home.portal_error": "You cannot teleport while standing in a portal!",
   "commands.poppy.home.teleporting": "Teleportation will occur in 3 seconds. Do not move!",
   "commands.poppy.home.not_found": "You do not have a home named '%s'",
   "commands.poppy.home.cancel_moved": "Teleportation canceled because you moved!",
-  "commands.poppy.home.success": "You have been successfully teleported to your home: %s"
+  "commands.poppy.home.success": "You have been successfully teleported to your home: %s",
+  "commands.poppy.homes.header": "You have %s homes (Page %s/%s):",
+  "commands.poppy.homes.empty": "You don't have any homes set!",
+  "commands.poppy.homes.more_pages": "Use '/homes <page>' to see more pages (Total: %s)",
+  "commands.poppy.homes.invalid_page": "Invalid page number! There are %s page(s) available.",
+  "commands.poppy.homes.click_to_teleport": "Click to teleport to '%s'",
+  "dimension.minecraft.overworld": "Overworld",
+  "dimension.minecraft.the_nether": "Nether",
+  "dimension.minecraft.the_end": "End"
 }
