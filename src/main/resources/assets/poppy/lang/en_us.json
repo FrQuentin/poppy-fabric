@@ -1,7 +1,9 @@
 {
   "commands.poppy.sethome.usage": "Usage: /sethome <home>",
+  "commands.poppy.sethome.invalid_name": "The home name '%s' is invalid! Only alphanumeric characters, hyphens (-), and underscores (_) are allowed, with a maximum length of %s characters.",
   "commands.poppy.sethome.already_exists": "A home named '%s' already exists!",
   "commands.poppy.sethome.success": "Successfully created a new home: %s",
+  "commands.poppy.sethome.limit_reached": "You have reached the maximum number of homes (%s)!",
   "commands.poppy.delhome.usage": "Usage: /delhome <home>",
   "commands.poppy.delhome.success": "Successfully deleted your home: %s",
   "commands.poppy.delhome.not_found": "You do not have a home named '%s'",

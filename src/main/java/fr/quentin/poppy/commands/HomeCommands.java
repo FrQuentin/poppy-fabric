@@ -48,16 +48,26 @@ public class HomeCommands {
         var player = source.getPlayerOrThrow();
         var playerId = player.getUuid();
 
+        if (!HomeDataManager.isValidHomeName(homeName)) {
+            source.sendError(Text.translatable("commands.poppy.sethome.invalid_name", homeName, HomeDataManager.MAX_CHARACTER_FOR_HOME_NAME));
+            return 0;
+        }
+
         if (HomeDataManager.getHome(playerId, homeName) != null) {
             source.sendError(Text.translatable("commands.poppy.sethome.already_exists", homeName));
             return 0;
         }
 
-        var pos = player.getPos();
-        var dimension = player.getWorld().getRegistryKey();
+        try {
+            var pos = player.getPos();
+            var dimension = player.getWorld().getRegistryKey();
+            HomeDataManager.addHome(playerId, homeName, dimension, pos);
+            source.sendFeedback(() -> Text.translatable("commands.poppy.sethome.success", homeName), false);
+        } catch (IllegalStateException e) {
+            source.sendError(Text.translatable("commands.poppy.sethome.limit_reached", HomeDataManager.MAX_HOMES_PER_PLAYER));
+            return 0;
+        }
 
-        HomeDataManager.addHome(playerId, homeName, dimension, pos);
-        source.sendFeedback(() -> Text.translatable("commands.poppy.sethome.success", homeName), false);
         return 1;
     }
 

@@ -1,6 +1,7 @@
 package fr.quentin.poppy.data;
 
 import net.minecraft.registry.RegistryKey;
+import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 
@@ -13,6 +14,8 @@ import java.util.UUID;
 
 public class HomeDataManager {
     private static final Map<UUID, Map<String, HomeData>> playerHomes = new HashMap<>();
+    public static final int MAX_HOMES_PER_PLAYER = 24;
+    public static final int MAX_CHARACTER_FOR_HOME_NAME = 48;
 
     private static String getFormattedDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH);
@@ -30,6 +33,11 @@ public class HomeDataManager {
     }
 
     public static void addHome(UUID playerId, String homeName, RegistryKey<World> dimension, Vec3d position) {
+        Map<String, HomeData> homes = playerHomes.getOrDefault(playerId, new HashMap<>());
+        if (homes.size() >= MAX_HOMES_PER_PLAYER) {
+            throw new IllegalStateException(Text.translatable("commands.poppy.sethome.limit_reached", MAX_HOMES_PER_PLAYER).getString());
+        }
+
         String creationDate = getFormattedDate();
         playerHomes.computeIfAbsent(playerId, k -> new HashMap<>()).put(homeName, new HomeData(homeName, dimension, position, creationDate));
         save();
@@ -54,5 +62,12 @@ public class HomeDataManager {
 
     public static Map<String, HomeData> getPlayerHomes(UUID playerId) {
         return playerHomes.getOrDefault(playerId, new HashMap<>());
+    }
+
+    public static boolean isValidHomeName(String homeName) {
+        if (homeName.length() > MAX_CHARACTER_FOR_HOME_NAME) {
+            return false;
+        }
+        return homeName.matches("[a-zA-Z0-9_-]+");
     }
 }
