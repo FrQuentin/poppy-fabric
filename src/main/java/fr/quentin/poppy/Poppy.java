@@ -17,8 +17,8 @@ public class Poppy implements ModInitializer {
 	public void onInitialize() {
 		HomeDataManager.load();
 		HomeCommands.register();
-		Runtime.getRuntime().addShutdownHook(new Thread(HomeDataManager::save));
 
+		Runtime.getRuntime().addShutdownHook(new Thread(HomeDataManager::save));
 		ServerTickEvents.END_SERVER_TICK.register(PendingTeleport::tick);
 	}
 }

@@ -19,10 +19,12 @@ public class HomeSuggestionProvider implements SuggestionProvider<ServerCommandS
             var player = source.getPlayerOrThrow();
             var playerId = player.getUuid();
 
-            Map<String, ?> homes = HomeDataManager.getPlayerHomes(playerId);
-            if (homes != null) {
-                for (String homeName : homes.keySet()) {
-                    builder.suggest(homeName);
+            synchronized (HomeDataManager.class) {
+                Map<String, ?> homes = HomeDataManager.getPlayerHomes(playerId);
+                if (homes != null) {
+                    for (String homeName : homes.keySet()) {
+                        builder.suggest(homeName);
+                    }
                 }
             }
         } catch (Exception e) {

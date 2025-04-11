@@ -21,5 +21,6 @@
   "commands.poppy.homes.click_to_teleport": "Click to teleport to '%s'",
   "dimension.minecraft.overworld": "Overworld",
   "dimension.minecraft.the_nether": "Nether",
-  "dimension.minecraft.the_end": "End"
+  "dimension.minecraft.the_end": "End",
+  "commands.poppy.generic_error": "A server error occurred. Please try again later."
 }
