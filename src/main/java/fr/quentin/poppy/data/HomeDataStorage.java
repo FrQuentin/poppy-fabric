@@ -7,17 +7,24 @@ import net.minecraft.registry.RegistryKeys;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
-
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
 
 public class HomeDataStorage {
-    private static final Path HOME_DATA_FILE = Path.of(Poppy.MOD_ID + "-homes.json");
+    private static final Path DATA_DIR = Path.of("poppy");
+    private static final Path HOME_DATA_FILE = DATA_DIR.resolve("homes.json");
     private static final Gson GSON = new GsonBuilder().setPrettyPrinting().create();
 
     public static Map<UUID, Map<String, HomeData>> loadHomes() {
+        try {
+            Files.createDirectories(DATA_DIR);
+        } catch (IOException e) {
+            Poppy.LOGGER.error("Error while creating data folder", e);
+            return new HashMap<>();
+        }
+
         if (!Files.exists(HOME_DATA_FILE)) {
             return new HashMap<>();
         }
@@ -37,7 +44,10 @@ public class HomeDataStorage {
                     String worldName = homeJson.get("world").getAsString();
                     JsonObject positionJson = homeJson.getAsJsonObject("position");
 
-                    RegistryKey<World> dimension = RegistryKey.of(RegistryKeys.WORLD, Identifier.of(worldName));
+                    RegistryKey<World> dimension = RegistryKey.of(
+                            RegistryKeys.WORLD,
+                            Identifier.of(worldName)
+                    );
 
                     Vec3d position = new Vec3d(
                             positionJson.get("x").getAsDouble(),
@@ -52,13 +62,20 @@ public class HomeDataStorage {
             }
 
             return homes;
-        } catch (IOException e) {
-            Poppy.LOGGER.error("An error occurred while loading homes from the JSON file.", e);
+        } catch (IOException | JsonParseException e) {
+            Poppy.LOGGER.error("Error while loading homes data", e);
             return new HashMap<>();
         }
     }
 
     public static void saveHomes(Map<UUID, Map<String, HomeData>> homes) {
+        try {
+            Files.createDirectories(DATA_DIR);
+        } catch (IOException e) {
+            Poppy.LOGGER.error("Error while creating data folder", e);
+            return;
+        }
+
         JsonObject json = new JsonObject();
         JsonObject homesJson = new JsonObject();
 
@@ -69,7 +86,6 @@ public class HomeDataStorage {
                 JsonObject homeJson = createHomeJson(home);
                 playerHomesJson.add(homeJson);
             }
-
             homesJson.add(entry.getKey().toString(), playerHomesJson);
         }
 
@@ -78,7 +94,7 @@ public class HomeDataStorage {
         try (BufferedWriter writer = Files.newBufferedWriter(HOME_DATA_FILE)) {
             GSON.toJson(json, writer);
         } catch (IOException e) {
-            Poppy.LOGGER.error("An error occurred while saving homes to the JSON file.", e);
+            Poppy.LOGGER.error("Error while saving homes data", e);
         }
     }
 

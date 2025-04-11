@@ -1,6 +1,8 @@
 package fr.quentin.poppy.data;
 
 import fr.quentin.poppy.Poppy;
+import fr.quentin.poppy.config.PoppyConfig;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.registry.RegistryKey;
 import net.minecraft.text.Text;
 import net.minecraft.util.math.Vec3d;
@@ -12,6 +14,18 @@ public class HomeDataManager {
     private static final Map<UUID, Map<String, HomeData>> playerHomes = new HashMap<>();
     public static final int MAX_HOMES_PER_PLAYER = 24;
     public static final int MAX_CHARACTER_FOR_HOME_NAME = 48;
+    private static final int SAVE_INTERVAL_TICKS = PoppyConfig.getBackupIntervalMinutes() * 60 * 20;
+    private static int ticksSinceLastSave = 0;
+
+    public static void schedulePeriodicSave() {
+        ServerTickEvents.END_SERVER_TICK.register(server -> {
+            ticksSinceLastSave++;
+            if (ticksSinceLastSave >= SAVE_INTERVAL_TICKS) {
+                save();
+                ticksSinceLastSave = 0;
+            }
+        });
+    }
 
     private static String getFormattedDate() {
         SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.ENGLISH);

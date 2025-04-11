@@ -63,19 +63,23 @@ public class PendingTeleport {
                 ));
             } else {
                 ServerWorld targetWorld = server.getWorld(task.targetDimension());
-                if (targetWorld != null) {
-                    player.teleport(
-                            targetWorld,
-                            task.targetPosition().x,
-                            task.targetPosition().y,
-                            task.targetPosition().z,
-                            EnumSet.noneOf(PositionFlag.class),
-                            player.getYaw(),
-                            player.getPitch(),
-                            false
-                    );
-                    player.sendMessage(Text.translatable("commands.poppy.home.success", task.homeName()));
+                if (targetWorld == null) {
+                    player.sendMessage(Text.translatable("commands.poppy.home.dimension_not_found", task.targetDimension().getValue()));
+                    pendingTeleports.remove(i--);
+                    continue;
                 }
+
+                player.teleport(
+                        targetWorld,
+                        task.targetPosition().x,
+                        task.targetPosition().y,
+                        task.targetPosition().z,
+                        EnumSet.noneOf(PositionFlag.class),
+                        player.getYaw(),
+                        player.getPitch(),
+                        false
+                );
+                player.sendMessage(Text.translatable("commands.poppy.home.success", task.homeName()));
                 pendingTeleports.remove(i--);
             }
         }

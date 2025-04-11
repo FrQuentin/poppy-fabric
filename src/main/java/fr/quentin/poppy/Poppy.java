@@ -1,6 +1,7 @@
 package fr.quentin.poppy;
 
 import fr.quentin.poppy.commands.HomeCommands;
+import fr.quentin.poppy.config.PoppyConfig;
 import fr.quentin.poppy.data.HomeDataManager;
 import fr.quentin.poppy.data.PendingTeleport;
 import net.fabricmc.api.ModInitializer;
@@ -15,7 +16,9 @@ public class Poppy implements ModInitializer {
 
 	@Override
 	public void onInitialize() {
+		PoppyConfig.load();
 		HomeDataManager.load();
+		HomeDataManager.schedulePeriodicSave();
 		HomeCommands.register();
 
 		Runtime.getRuntime().addShutdownHook(new Thread(HomeDataManager::save));

@@ -3,6 +3,7 @@ package fr.quentin.poppy.commands;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
+import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import fr.quentin.poppy.Poppy;
 import fr.quentin.poppy.data.HomeData;
 import fr.quentin.poppy.data.HomeDataManager;
@@ -11,6 +12,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.minecraft.registry.tag.BlockTags;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.HoverEvent;
 import net.minecraft.text.Text;
@@ -100,37 +102,38 @@ public class HomeCommands {
         return 1;
     }
 
-    private static int teleportToHome(CommandContext<ServerCommandSource> context, String homeName) {
-        try {
-            var source = context.getSource();
-            var player = source.getPlayerOrThrow();
-            var playerId = player.getUuid();
-            long currentTime = System.currentTimeMillis();
+    private static int teleportToHome(CommandContext<ServerCommandSource> context, String homeName) throws CommandSyntaxException {
+        var source = context.getSource();
+        var player = source.getPlayerOrThrow();
+        var playerId = player.getUuid();
+        long currentTime = System.currentTimeMillis();
 
-            if (lastHomeCommandUsage.containsKey(playerId)) {
-                long lastUsage = lastHomeCommandUsage.get(playerId);
-                if (currentTime - lastUsage < HOME_COMMAND_COOLDOWN) {
-                    long remainingCooldown = HOME_COMMAND_COOLDOWN - (currentTime - lastUsage);
-                    source.sendError(Text.translatable("commands.poppy.home.cooldown", remainingCooldown / 1000));
-                    return 0;
-                }
+        if (lastHomeCommandUsage.containsKey(playerId)) {
+            long lastUsage = lastHomeCommandUsage.get(playerId);
+            if (currentTime - lastUsage < HOME_COMMAND_COOLDOWN) {
+                long remainingCooldown = HOME_COMMAND_COOLDOWN - (currentTime - lastUsage);
+                source.sendError(Text.translatable("commands.poppy.home.cooldown", remainingCooldown / 1000));
+                return 0;
+            }
+        }
+
+        HomeData home = HomeDataManager.getHome(playerId, homeName);
+        if (home != null) {
+            ServerWorld targetWorld = Objects.requireNonNull(player.getServer()).getWorld(home.dimension());
+            if (targetWorld == null) {
+                source.sendError(Text.translatable("commands.poppy.home.dimension_not_found", home.dimension().getValue()));
+                return 0;
             }
 
-            HomeData home = HomeDataManager.getHome(playerId, homeName);
-            if (home != null) {
-                if (player.getWorld().getBlockState(player.getBlockPos()).isIn(BlockTags.PORTALS)) {
-                    source.sendError(Text.translatable("commands.poppy.home.portal_error"));
-                    return 0;
-                }
-                PendingTeleport.add(player, home.dimension(), home.position(), homeName);
-                source.sendFeedback(() -> Text.translatable("commands.poppy.home.teleporting"), false);
-                lastHomeCommandUsage.put(playerId, currentTime);
-            } else {
-                source.sendError(Text.translatable("commands.poppy.home.not_found", homeName));
+            if (player.getWorld().getBlockState(player.getBlockPos()).isIn(BlockTags.PORTALS)) {
+                source.sendError(Text.translatable("commands.poppy.home.portal_error"));
+                return 0;
             }
-        } catch (Exception e) {
-            Poppy.LOGGER.error("An error occurred while executing /home command for player {}", Objects.requireNonNull(context.getSource().getPlayer()).getName(), e);
-            context.getSource().sendError(Text.translatable("commands.poppy.generic_error"));
+            PendingTeleport.add(player, home.dimension(), home.position(), homeName);
+            source.sendFeedback(() -> Text.translatable("commands.poppy.home.teleporting"), false);
+            lastHomeCommandUsage.put(playerId, currentTime);
+        } else {
+            source.sendError(Text.translatable("commands.poppy.home.not_found", homeName));
         }
         return 1;
     }
